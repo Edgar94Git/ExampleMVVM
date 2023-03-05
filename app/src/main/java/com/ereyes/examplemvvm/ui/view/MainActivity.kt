@@ -1,11 +1,14 @@
-package com.ereyes.examplemvvm.view
+package com.ereyes.examplemvvm.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.activity.viewModels
+import androidx.core.view.isVisible
 import com.ereyes.examplemvvm.databinding.ActivityMainBinding
-import com.ereyes.examplemvvm.model.QuoteModel
-import com.ereyes.examplemvvm.viewModel.QuoteViewModel
+import com.ereyes.examplemvvm.data.model.QuoteModel
+import com.ereyes.examplemvvm.ui.viewModel.QuoteViewModel
+import com.google.android.material.snackbar.Snackbar
 
 class MainActivity : AppCompatActivity() {
 
@@ -16,6 +19,8 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        quoteViewModel.onCreate()
         setUpObservers()
         setUpClickListener()
     }
@@ -24,11 +29,17 @@ class MainActivity : AppCompatActivity() {
         quoteViewModel.getQuoteModel().observe(this){ quoteModel ->
             loadInformation(quoteModel)
         }
+        quoteViewModel.isLoaded().observe(this){ isLoaded ->
+            binding.progressBarQuote.isVisible = isLoaded
+        }
+        quoteViewModel.getSnackBarMsg().observe(this){ msg ->
+            Snackbar.make(binding.root, msg, Snackbar.LENGTH_LONG).show()
+        }
     }
 
     private fun setUpClickListener(){
         binding.viwContainer.setOnClickListener {
-            quoteViewModel.random()
+            quoteViewModel.randomQuote()
         }
     }
 
