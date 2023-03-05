@@ -6,7 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.ereyes.examplemvvm.data.model.QuoteModel
 import com.ereyes.examplemvvm.domain.GetQuotesUseCase
 import com.ereyes.examplemvvm.domain.GetRandomQuoteUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /****
  * Project: ExampleMVVM
@@ -14,10 +16,11 @@ import kotlinx.coroutines.launch
  * Created by Edgar Reyes Gonzalez on 3/5/2023 at 1:49 PM
  * All rights reserved 2023.
  ****/
-class QuoteViewModel: ViewModel() {
-
-    val getQuotesUseCase = GetQuotesUseCase()
-    val getRandomQuoteUseCase = GetRandomQuoteUseCase()
+@HiltViewModel
+class QuoteViewModel @Inject constructor(
+    val getQuotesUseCase: GetQuotesUseCase,
+    val getRandomQuoteUseCase: GetRandomQuoteUseCase
+) : ViewModel() {
 
     private val quoteModel: MutableLiveData<QuoteModel> = MutableLiveData<QuoteModel>()
     fun getQuoteModel(): MutableLiveData<QuoteModel> = quoteModel
@@ -28,18 +31,16 @@ class QuoteViewModel: ViewModel() {
     private val snackBarMsg: MutableLiveData<String> = MutableLiveData<String>()
     fun getSnackBarMsg(): MutableLiveData<String> = snackBarMsg
 
-    fun randomQuote(){
+    fun randomQuote() {
         try {
             loaded.value = true
             val quote = getRandomQuoteUseCase()
             quote.let {
                 quoteModel.value = it
             }
-        }
-        catch (e: Exception){
+        } catch (e: Exception) {
             snackBarMsg.value = e.message
-        }
-        finally {
+        } finally {
             loaded.value = false
         }
     }
@@ -48,15 +49,13 @@ class QuoteViewModel: ViewModel() {
         viewModelScope.launch {
             try {
                 loaded.value = true
-                val result:List<QuoteModel>? = getQuotesUseCase()
-                if(!result.isNullOrEmpty()){
+                val result: List<QuoteModel>? = getQuotesUseCase()
+                if (!result.isNullOrEmpty()) {
                     quoteModel.value = result[0]
                 }
-            }
-            catch (e: Exception){
+            } catch (e: Exception) {
                 snackBarMsg.value = e.message
-            }
-            finally {
+            } finally {
                 loaded.value = false
             }
         }

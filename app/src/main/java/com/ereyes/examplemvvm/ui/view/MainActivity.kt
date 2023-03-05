@@ -2,14 +2,15 @@ package com.ereyes.examplemvvm.ui.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.View
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.ereyes.examplemvvm.databinding.ActivityMainBinding
 import com.ereyes.examplemvvm.data.model.QuoteModel
 import com.ereyes.examplemvvm.ui.viewModel.QuoteViewModel
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
