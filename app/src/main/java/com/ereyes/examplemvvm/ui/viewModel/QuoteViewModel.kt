@@ -3,9 +3,9 @@ package com.ereyes.examplemvvm.ui.viewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ereyes.examplemvvm.data.model.QuoteModel
 import com.ereyes.examplemvvm.domain.GetQuotesUseCase
 import com.ereyes.examplemvvm.domain.GetRandomQuoteUseCase
+import com.ereyes.examplemvvm.domain.model.Quote
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -22,8 +22,8 @@ class QuoteViewModel @Inject constructor(
     val getRandomQuoteUseCase: GetRandomQuoteUseCase
 ) : ViewModel() {
 
-    private val quoteModel: MutableLiveData<QuoteModel> = MutableLiveData<QuoteModel>()
-    fun getQuoteModel(): MutableLiveData<QuoteModel> = quoteModel
+    private val quoteModel: MutableLiveData<Quote> = MutableLiveData<Quote>()
+    fun getQuoteModel(): MutableLiveData<Quote> = quoteModel
 
     private val loaded: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
     fun isLoaded(): MutableLiveData<Boolean> = loaded
@@ -32,16 +32,18 @@ class QuoteViewModel @Inject constructor(
     fun getSnackBarMsg(): MutableLiveData<String> = snackBarMsg
 
     fun randomQuote() {
-        try {
-            loaded.value = true
-            val quote = getRandomQuoteUseCase()
-            quote.let {
-                quoteModel.value = it
+        viewModelScope.launch{
+            try {
+                loaded.value = true
+                val quote = getRandomQuoteUseCase()
+                quote.let {
+                    quoteModel.value = it
+                }
+            } catch (e: Exception) {
+                snackBarMsg.value = e.message
+            } finally {
+                loaded.value = false
             }
-        } catch (e: Exception) {
-            snackBarMsg.value = e.message
-        } finally {
-            loaded.value = false
         }
     }
 
@@ -49,7 +51,7 @@ class QuoteViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 loaded.value = true
-                val result: List<QuoteModel>? = getQuotesUseCase()
+                val result: List<Quote>? = getQuotesUseCase()
                 if (!result.isNullOrEmpty()) {
                     quoteModel.value = result[0]
                 }

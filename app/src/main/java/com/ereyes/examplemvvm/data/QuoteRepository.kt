@@ -1,8 +1,11 @@
 package com.ereyes.examplemvvm.data
 
+import com.ereyes.examplemvvm.data.dataBase.dao.QuoteDao
+import com.ereyes.examplemvvm.data.dataBase.entities.QuoteEntity
 import com.ereyes.examplemvvm.data.model.QuoteModel
-import com.ereyes.examplemvvm.data.model.QuoteProvider
 import com.ereyes.examplemvvm.data.network.QuoteService
+import com.ereyes.examplemvvm.domain.model.Quote
+import com.ereyes.examplemvvm.domain.model.toDomain
 import javax.inject.Inject
 
 /****
@@ -13,12 +16,24 @@ import javax.inject.Inject
  ****/
 class QuoteRepository @Inject constructor(
     private val api: QuoteService,
-    private val quoteProvider: QuoteProvider
+    private val quoteDao: QuoteDao
 ) {
 
-    suspend fun getAllQuotes(): List<QuoteModel>{
+    suspend fun getAllQuotesFromApi(): List<Quote>{
         val response: List<QuoteModel> = api.getQuotes()
-        quoteProvider.quotes = response
-        return response
+        return response.map { it.toDomain() }
+    }
+
+    suspend fun getAllQuoteFromDataBase(): List<Quote>{
+        val response: List<QuoteEntity> = quoteDao.getAllQuote()
+        return response.map { it.toDomain() }
+    }
+
+    suspend fun insertAllQuote(quotes: List<QuoteEntity>){
+        quoteDao.insertAllQuote(quotes)
+    }
+
+    suspend fun clearQuotes() {
+        quoteDao.deleteAllQuotes()
     }
 }

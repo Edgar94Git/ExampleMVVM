@@ -1,7 +1,8 @@
 package com.ereyes.examplemvvm.domain
 
 import com.ereyes.examplemvvm.data.QuoteRepository
-import com.ereyes.examplemvvm.data.model.QuoteModel
+import com.ereyes.examplemvvm.data.dataBase.entities.toDataBase
+import com.ereyes.examplemvvm.domain.model.Quote
 import javax.inject.Inject
 
 /****
@@ -12,7 +13,15 @@ import javax.inject.Inject
  ****/
 class GetQuotesUseCase @Inject constructor(private val repository: QuoteRepository) {
 
-    suspend operator fun invoke(): List<QuoteModel>? {
-        return repository.getAllQuotes()
+    suspend operator fun invoke(): List<Quote> {
+        val quotes: List<Quote> = repository.getAllQuotesFromApi()
+        return if(quotes.isNotEmpty())
+        {
+            repository.clearQuotes()
+            repository.insertAllQuote(quotes.map { it.toDataBase() })
+            quotes
+        }
+        else
+            repository.getAllQuoteFromDataBase()
     }
 }

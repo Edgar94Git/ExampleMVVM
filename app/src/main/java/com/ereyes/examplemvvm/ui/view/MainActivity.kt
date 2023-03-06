@@ -5,7 +5,7 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.core.view.isVisible
 import com.ereyes.examplemvvm.databinding.ActivityMainBinding
-import com.ereyes.examplemvvm.data.model.QuoteModel
+import com.ereyes.examplemvvm.domain.model.Quote
 import com.ereyes.examplemvvm.ui.viewModel.QuoteViewModel
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,8 +44,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun loadInformation(quoteModel: QuoteModel){
-        binding.tvAuthor.text = quoteModel.author
-        binding.tvQuote.text = quoteModel.quote
+    private fun loadInformation(quote: Quote){
+        binding.tvAuthor.text = quote.author
+        binding.tvQuote.text = quote.quote
     }
 }
