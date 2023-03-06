@@ -36,8 +36,9 @@ class QuoteViewModel @Inject constructor(
             try {
                 loaded.value = true
                 val quote = getRandomQuoteUseCase()
-                if(quote != null)
-                    quoteModel.value = quote
+                if(quote != null) {
+                    quoteModel.value = quote!!
+                }
             } catch (e: Exception) {
                 snackBarMsg.value = e.message
             } finally {
